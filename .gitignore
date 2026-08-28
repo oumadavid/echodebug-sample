@@ -1,0 +1,19 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+
+# next
+/.next/
+/out/
+
+# env — never commit real secrets; only .env.example is tracked
+.env
+.env*.local
+
+# debug / os
+npm-debug.log*
+build-error.log
+.DS_Store
+*.pem
