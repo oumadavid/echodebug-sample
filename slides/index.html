@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EchoDebug — 5-minute talk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0f0d;
+      --panel: #141a16;
+      --line: #2a3a30;
+      --muted: #8fa396;
+      --text: #e8f0ea;
+      --accent: #7dff9a;
+      --warn: #ffc857;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: "IBM Plex Sans", system-ui, sans-serif; }
+    .deck { height: 100%; overflow: hidden; }
+    .slide {
+      display: none;
+      height: 100%;
+      padding: 7vh 8vw 10vh;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.4rem;
+    }
+    .slide.active { display: flex; }
+    .kicker {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      color: var(--accent);
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1.1; font-weight: 700; max-width: 16ch; }
+    h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.15; font-weight: 700; }
+    p.lead { font-size: clamp(1.15rem, 2.2vw, 1.5rem); color: var(--muted); max-width: 42rem; line-height: 1.45; }
+    ul { list-style: none; display: grid; gap: 0.85rem; max-width: 46rem; }
+    li {
+      font-size: clamp(1.05rem, 2vw, 1.35rem);
+      line-height: 1.4;
+      padding-left: 1.2rem;
+      border-left: 3px solid var(--accent);
+    }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; max-width: 56rem; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.15rem 1.25rem;
+    }
+    .card h3 { font-size: 1.05rem; margin-bottom: 0.4rem; color: var(--warn); font-family: "IBM Plex Mono", monospace; }
+    .card p { color: var(--muted); line-height: 1.45; }
+    .flow {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: clamp(0.85rem, 1.6vw, 1.1rem);
+      line-height: 1.7;
+      color: var(--accent);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.2rem 1.4rem;
+      max-width: 52rem;
+      white-space: pre-wrap;
+    }
+    .products { display: flex; flex-wrap: wrap; gap: 0.6rem; max-width: 48rem; }
+    .tag {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.95rem;
+      padding: 0.45rem 0.75rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+    }
+    footer.bar {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.7rem 1.4rem;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      background: linear-gradient(transparent, #0c0f0d 40%);
+    }
+    .hint { opacity: 0.75; }
+    a { color: var(--accent); }
+    @media (max-width: 800px) {
+      .row { grid-template-columns: 1fr; }
+      .slide { padding: 5vh 6vw 12vh; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck" id="deck">
+    <section class="slide active">
+      <p class="kicker">EchoDebug · 5 minutes</p>
+      <h1>Hear the bug. Don’t just read it.</h1>
+      <p class="lead">A voice-enabled debugging agent: paste a real build failure, get a spoken root-cause in the same terminal.</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">01 · Problem</p>
+      <h2>Build logs are noisy. Time is not.</h2>
+      <ul>
+        <li>A failed <code>next build</code> dumps stack traces, module graphs, and red herrings.</li>
+        <li>The usual loop: copy the log → paste into chat → wait → read a wall of text.</li>
+        <li>Eyes stay on the error; the explanation should be heard, not dumped on screen.</li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">02 · Solution</p>
+      <h2>Identify the error. Read it aloud.</h2>
+      <div class="row">
+        <div class="card">
+          <h3>See</h3>
+          <p>The original build error stays in the terminal. No spoken script printed on top of it.</p>
+        </div>
+        <div class="card">
+          <h3>Hear</h3>
+          <p>Claude diagnoses the failure. ElevenLabs speaks the explanation in-session — no browser, no data-URL dump.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">03 · How it runs</p>
+      <h2>One pipe. One webhook. Voice back.</h2>
+      <pre class="flow">npm run build 2>&amp;1 | node scripts/echodebug.js
+
+terminal  →  n8n Cloud webhook
+          →  Claude (root cause)
+          →  ElevenLabs (speech)
+          →  play MP3 here</pre>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">04 · Products</p>
+      <h2>What we wired together</h2>
+      <div class="products">
+        <span class="tag">n8n Cloud</span>
+        <span class="tag">Anthropic Claude</span>
+        <span class="tag">ElevenLabs</span>
+        <span class="tag">Cursor</span>
+        <span class="tag">Next.js</span>
+        <span class="tag">Node.js</span>
+        <span class="tag">GitHub</span>
+      </div>
+      <p class="lead">n8n owns the agent pipeline. The sample Next.js app fails on purpose so the demo uses a real stack trace, not a fake string.</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">05 · Demo</p>
+      <h2>What you will see and hear</h2>
+      <ul>
+        <li>Sample app: missing <code>DATABASE_URL</code> at import time → <code>next build</code> dies.</li>
+        <li>Client reprints the error, then plays the diagnosis through the speakers.</li>
+        <li>Repo: github.com/oumadavid/echodebug-sample</li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">06 · Close</p>
+      <h1>Keep the log. Speak the why.</h1>
+      <p class="lead">EchoDebug is a debugging companion for the terminal: less copy-paste, faster understanding, eyes still on the failure.</p>
+    </section>
+  </div>
+
+  <footer class="bar">
+    <span>EchoDebug</span>
+    <span id="pos">1 / 7</span>
+    <span class="hint">← → or click · F for fullscreen</span>
+  </footer>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const pos = document.getElementById("pos");
+    let i = 0;
+    function show(n) {
+      i = Math.max(0, Math.min(slides.length - 1, n));
+      slides.forEach((s, idx) => s.classList.toggle("active", idx === i));
+      pos.textContent = i + 1 + " / " + slides.length;
+    }
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") { e.preventDefault(); show(i + 1); }
+      if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); show(i - 1); }
+      if (e.key === "Home") show(0);
+      if (e.key === "End") show(slides.length - 1);
+      if (e.key === "f" || e.key === "F") {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+      }
+    });
+    document.body.addEventListener("click", (e) => {
+      if (e.target.closest("a")) return;
+      show(i + (e.clientX > innerWidth / 2 ? 1 : -1));
+    });
+  </script>
+</body>
+</html>

@@ -44,6 +44,12 @@ npm run build 2>&1 | node scripts/echodebug.js
 
 Optional: `ECHODEBUG_WEBHOOK` overrides the default `https://jsninja.app.n8n.cloud/webhook/debug`. `--no-play` skips audio (error text only).
 
+## 5-minute slides
+
+Live deck: https://oumadavid.github.io/echodebug-sample/
+
+Or open `slides/index.html` locally. Arrow keys or click to advance; `F` for fullscreen.
+
 ## How you would fix it (do not do this for the sample)
 
 ```bash
