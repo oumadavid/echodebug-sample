@@ -15,5 +15,8 @@
 # debug / os
 npm-debug.log*
 build-error.log
+last-build.log
+debug.mp3
+response.json
 .DS_Store
 *.pem

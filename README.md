@@ -27,6 +27,23 @@ Look for a comment block in `lib/db.ts` labeled **INTENTIONAL BUILD BUG**.
 
 Copy the last ~50 lines of stderr into your debugging agent.
 
+## Hear the diagnosis in this terminal
+
+The n8n webhook returns JSON (including MP3 as base64). A browser or data URL will not speak in Git Bash. Use the local client: it reprints the error in this terminal, then **plays** the spoken explanation (no explanation text). Playback uses ffplay if installed, otherwise Windows MediaPlayer with no extra window.
+
+```bash
+npm run build 2>&1 | tee last-build.log
+node scripts/echodebug.js --from-file last-build.log
+```
+
+Or pipe stdin:
+
+```bash
+npm run build 2>&1 | node scripts/echodebug.js
+```
+
+Optional: `ECHODEBUG_WEBHOOK` overrides the default `https://jsninja.app.n8n.cloud/webhook/debug`. `--no-play` skips audio (error text only).
+
 ## How you would fix it (do not do this for the sample)
 
 ```bash
